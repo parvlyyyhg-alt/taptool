@@ -1,0 +1,81 @@
+import os
+import colorama
+from colorama import Fore, Style
+import pyfiglet
+
+colorama.init()
+
+def print_gradient_text(text, start_color, end_color):
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        r = int(start_color[0] + (end_color[0] - start_color[0]) * i / len(lines))
+        g = int(start_color[1] + (end_color[1] - start_color[1]) * i / len(lines))
+        b = int(start_color[2] + (end_color[2] - start_color[2]) * i / len(lines))
+        color_code = f"\033[38;2;{r};{g};{b}m"
+        print(color_code + line)
+    print(Style.RESET_ALL)
+
+def search_in_db(query):
+    if not os.path.exists('database/db.txt'):
+        return False
+    
+    with open('database/db.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            if query.lower() in line.lower():
+                return line.strip()
+    return False
+
+def main():
+    start_color = (0, 0, 255)
+    end_color = (0, 255, 0)
+    ascii_art = pyfiglet.figlet_format("TAP", font="slant")
+    
+    while True:
+        print_gradient_text(ascii_art, start_color, end_color)
+        
+        print("\nВыберите категорию пробива:")
+        print("1. По номеру телефона")
+        print("2. По email")
+        print("3. По ФИО")
+        print("0. Выход")
+        
+        choice = input("\nВведите номер: ")
+        
+        if choice == "0":
+            break
+            
+        elif choice == "1":
+            phone = input("Введите номер для поиска: ")
+            result = search_in_db(phone)
+            if result:
+                print(Fore.GREEN + f"Найдено: {result}" + Style.RESET_ALL)
+            else:
+                print(Fore.RED + "Данных не имеется" + Style.RESET_ALL)
+        
+        elif choice == "2":
+            email = input("Введите email для поиска: ")
+            result = search_in_db(email)
+            if result:
+                print(Fore.GREEN + f"Найдено: {result}" + Style.RESET_ALL)
+            else:
+                print(Fore.RED + "Данных не имеется" + Style.RESET_ALL)
+        
+        elif choice == "3":
+            fio = input("Введите ФИО для поиска: ")
+            result = search_in_db(fio)
+            if result:
+                print(Fore.GREEN + f"Найдено: {result}" + Style.RESET_ALL)
+            else:
+                print(Fore.RED + "Данных не имеется" + Style.RESET_ALL)
+        
+        else:
+            print(Fore.RED + "Ошибка выбора!" + Style.RESET_ALL)
+        
+        input("\nНажмите Enter для продолжения...")
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Ошибка: {e}")
