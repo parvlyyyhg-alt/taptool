@@ -5,16 +5,23 @@ import pyfiglet
 
 colorama.init()
 
-def print_gradient_text(text, start_color, end_color):
-    lines = text.split('\n')
+# Функция для очистки экрана
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+# Функция для создания градиентного текста
+def print_gradient_text(text, font, start_color, end_color):
+    ascii_art = pyfiglet.figlet_format(text, font=font)
+    lines = ascii_art.split('\n')
     for i, line in enumerate(lines):
         r = int(start_color[0] + (end_color[0] - start_color[0]) * i / len(lines))
         g = int(start_color[1] + (end_color[1] - start_color[1]) * i / len(lines))
         b = int(start_color[2] + (end_color[2] - start_color[2]) * i / len(lines))
         color_code = f"\033[38;2;{r};{g};{b}m"
-        print(color_code + line)
+        print(color_code + line.center(os.get_terminal_size().columns))
     print(Style.RESET_ALL)
 
+# Функция для поиска в базе данных
 def search_in_db(query):
     if not os.path.exists('database/db.txt'):
         return False
@@ -28,51 +35,74 @@ def search_in_db(query):
 def main():
     start_color = (0, 0, 255)
     end_color = (0, 255, 0)
-    ascii_art = pyfiglet.figlet_format("TAP", font="slant")
+    
+    # Переключение в полноэкранный режим (для Windows)
+    if os.name == 'nt':
+        os.system('mode con: cols=120 lines=40')
     
     while True:
-        print_gradient_text(ascii_art, start_color, end_color)
+        clear_screen()
         
-        print("\nВыберите категорию пробива:")
-        print("1. По номеру телефона")
-        print("2. По email")
-        print("3. По ФИО")
-        print("0. Выход")
+        # Выводим заголовок TAP большими буквами по центру
+        print_gradient_text("TAP", "big", start_color, end_color)
         
-        choice = input("\nВведите номер: ")
+        # Выводим меню
+        terminal_width = os.get_terminal_size().columns
+        menu_items = [
+            "1. По номеру телефона",
+            "2. По email", 
+            "3. По ФИО",
+            "0. Выход"
+        ]
+        
+        print("\n" * 3)  # Отступ сверху
+        
+        for item in menu_items:
+            print(item.center(terminal_width))
+        
+        print("\n" * 3)  # Отступ снизу
+        
+        choice = input("Введите номер: ".center(terminal_width))
         
         if choice == "0":
             break
             
         elif choice == "1":
-            phone = input("Введите номер для поиска: ")
+            clear_screen()
+            print_gradient_text("TAP", "big", start_color, end_color)
+            phone = input("\n\nВведите номер для поиска: ".center(terminal_width))
             result = search_in_db(phone)
             if result:
-                print(Fore.GREEN + f"Найдено: {result}" + Style.RESET_ALL)
+                print(Fore.GREEN + f"\nНайдено: {result}".center(terminal_width) + Style.RESET_ALL)
             else:
-                print(Fore.RED + "Данных не имеется" + Style.RESET_ALL)
+                print(Fore.RED + "\nДанных не имеется".center(terminal_width) + Style.RESET_ALL)
         
         elif choice == "2":
-            email = input("Введите email для поиска: ")
+            clear_screen()
+            print_gradient_text("TAP", "big", start_color, end_color)
+            email = input("\n\nВведите email для поиска: ".center(terminal_width))
             result = search_in_db(email)
             if result:
-                print(Fore.GREEN + f"Найдено: {result}" + Style.RESET_ALL)
+                print(Fore.GREEN + f"\nНайдено: {result}".center(terminal_width) + Style.RESET_ALL)
             else:
-                print(Fore.RED + "Данных не имеется" + Style.RESET_ALL)
+                print(Fore.RED + "\nДанных не имеется".center(terminal_width) + Style.RESET_ALL)
         
         elif choice == "3":
-            fio = input("Введите ФИО для поиска: ")
+            clear_screen()
+            print_gradient_text("TAP", "big", start_color, end_color)
+            fio = input("\n\nВведите ФИО для поиска: ".center(terminal_width))
             result = search_in_db(fio)
             if result:
-                print(Fore.GREEN + f"Найдено: {result}" + Style.RESET_ALL)
+                print(Fore.GREEN + f"\nНайдено: {result}".center(terminal_width) + Style.RESET_ALL)
             else:
-                print(Fore.RED + "Данных не имеется" + Style.RESET_ALL)
+                print(Fore.RED + "\nДанных не имеется".center(terminal_width) + Style.RESET_ALL)
         
         else:
-            print(Fore.RED + "Ошибка выбора!" + Style.RESET_ALL)
+            clear_screen()
+            print_gradient_text("TAP", "big", start_color, end_color)
+            print(Fore.RED + "\nОшибка выбора!".center(terminal_width) + Style.RESET_ALL)
         
-        input("\nНажмите Enter для продолжения...")
-        os.system('cls' if os.name == 'nt' else 'clear')
+        input("\n\nНажмите Enter для продолжения...".center(terminal_width))
 
 if __name__ == "__main__":
     try:
